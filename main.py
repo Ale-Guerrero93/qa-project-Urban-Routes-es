@@ -17,6 +17,9 @@ class UrbanRoutesPage:
     panuelos_button = (By.ID, 'panuelos')
     helados_button = (By.ID, 'helados')
     esperar_taxi_field = (By.ID, 'taxi')
+    driver.find_element = (By.NAME, "email")
+    driver.find_element = (By.CLASS_NAME, "form-input")
+    driver.find_element = (By.XPATH, "//input[@type='submit']")
 
     def __init__(self, driver):
         self.driver = driver
@@ -98,6 +101,17 @@ class TestUrbanRoutes:
 
     driver = None
 
+
+
+    @classmethod
+    def setup_class(cls):
+      # No modificar, ya que necesitamos un registro adicional habilitado para recuperar el código de confirmación del teléfono
+       options = Options()
+       options.set_capability("goog:loggingPrefs", {'performance': 'ALL'})
+       cls.driver = webdriver.Chrome(options=options)
+       cls.driver.get(data.urban_routes_url)
+       cls.routes_page = UrbanRoutesPage(cls.driver)
+
     @classmethod
     def setup_class(cls):
         # no lo modifiques, ya que necesitamos un registro adicional habilitado para recuperar el código de confirmación del teléfono
@@ -118,41 +132,47 @@ class TestUrbanRoutes:
     def test_pedir_taxi_completo(self):
         address_from = 'East 2nd Street, 601'
         self.page.configurar_direccion(address_from)
+        assert address_from == self.page.get_direccion_origen(), f"Dirección de origen incorrecta: {address_from}"
+
         address_to = '1300 1st St'
         self.page.configurar_direccion(address_to)
+        assert address_to == self.page.get_direccion_destino(), f"Dirección de destino incorrecta: {address_to}"
 
         self.page.seleccionar_tarifa_comfort()
+        tarifa_comfort_seleccionada = self.page.obtener_tarifa_seleccionada()
+        assert tarifa_comfort_seleccionada == "Comfort", "La tarifa seleccionada no es 'Comfort'"
 
         phone_number = '+1 123 123 12 12'
         self.page.rellenar_telefono(phone_number)
+        assert phone_number == self.page.obtener_telefono(), f"El número de teléfono no es correcto: {phone_number}"
 
         card_number = '1234 5678 9100'
         card_code = '111'
         self.page.agregar_tarjeta(card_number, card_code)
+        assert card_number == self.page.obtener_numero_tarjeta(), f"El número de tarjeta no es correcto: {card_number}"
 
         self.driver.get('https://around-v1.es.practicum-services.com/')
-        self.assertTrue("The card link was not activated")
+        assert "The card link was not activated" in self.driver.page_source, "El enlace de la tarjeta no se activó correctamente."
 
         self.page.pedir_manta_y_panuelos()
+        assert self.page.is_manta_y_panuelos_pedidos(), "La manta y los pañuelos no fueron solicitados correctamente."
 
         self.page.pedir_helados()
+        assert self.page.is_helados_pedidos(), "Los helados no fueron solicitados correctamente."
 
-        # Step 8: Send a message to the controller
         message_for_driver = 'Traiga un aperitivo'
         self.page.message_for_driver(message_for_driver)
+        assert message_for_driver == self.page.obtener_mensaje_para_conductor(), "El mensaje para el conductor no es correcto."
 
-        # Step 9: Wait for the taxi search modal to appear
         self.page.esperar_modal_buscando_taxi()
+        modal_buscando_visible = self.page.is_modal_buscando_taxi_visible()
+        assert modal_buscando_visible, "El modal 'Buscando Taxi' no es visible."
 
-        # Step 10: Wait for the driver information to appear in the modal
         self.page.esperar_informacion_conductor()
-
-        # Verify that the driver information is displayed in the modal
         conductor_info_visible = self.driver.find_element(*UrbanRoutesPage.CONDUCTOR_INFO).is_displayed()
-        self.assertTrue(conductor_info_visible, "Driver information is not visible.")
+        assert conductor_info_visible, "La información del conductor no está visible."
 
     def tearDown(self):
-        # Close the browser after each test
         self.driver.quit()
 
 
