@@ -12,8 +12,10 @@ En este proyecto se realizaron pruebas para probar la funsionalidad de la aplica
 Para las pruebas se utilizó la aplicación de Pycharm con lenguaje de Python en conjunto con selenium.
 
 # Instrucciones para ejecutar:
-Para poder realizar las pruebas correctamente se necesita actualizar el URL del servidor ya que el servidor tiene poco tiempo de vida, 
-se va a la sección de main.py y presionas el botón de inicio de pruebas.
+Para poder realizar las pruebas correctamente se necesita instalar selenium en pycharm, en la esquina superiot izquierda se encuentra un boton con rayas, 
+se selecciona ese boton y se presiona la seccion que dice abrir, selecciona el archivo correspondiente a el proyecto o tambien seguir los mismos pasos y 
+en vez de seleccionar el boton de abrir se selecciona proyect from version control actualizar y se pega el URL del repositorio y selecciona el  boton de clonar, 
+despues de eso se verifica el URL del servidor de la paguina con la que se trabajara ya que el servidor tiene poco tiempo de vida,  se va a la sección de main.py y presionas el botón de inicio de pruebas.
 
 ## URL del servidor
 https://cnt-2d0945fb-cedd-4199-bda9-07be70e50844.containerhub.tripleten-services.com?lng=es
