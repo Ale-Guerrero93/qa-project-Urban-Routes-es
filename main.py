@@ -1,5 +1,7 @@
+from lib2to3.pgen2 import driver
 import data
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -23,6 +25,10 @@ class UrbanRoutesPage:
 
     def __init__(self, driver):
         self.driver = driver
+
+    def find_email_field(self):
+            # Usando CSS Selector para localizar el campo de email
+        return self.driver.find_element(By.CSS_SELECTOR, "input[name='email']")
 
     def set_from(self, from_address):
         self.driver.find_element(*self.from_field).send_keys(from_address)
@@ -112,13 +118,6 @@ class TestUrbanRoutes:
        cls.driver.get(data.urban_routes_url)
        cls.routes_page = UrbanRoutesPage(cls.driver)
 
-    @classmethod
-    def setup_class(cls):
-        # no lo modifiques, ya que necesitamos un registro adicional habilitado para recuperar el código de confirmación del teléfono
-        from selenium.webdriver import DesiredCapabilities
-        capabilities = DesiredCapabilities.CHROME
-        capabilities["goog:loggingPrefs"] = {'performance': 'ALL'}
-        cls.driver = webdriver.Chrome(desired_capabilities=capabilities)
 
     def test_set_route(self):
         self.driver.get(data.urban_routes_url)
